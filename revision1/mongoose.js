@@ -44,6 +44,24 @@ await family_member.create(
 );
 
 
+ const child = await  family_member.find({
+    
+    name:"rohit",
+    category:"child"
+});
+console.log(child);
+
+ await family_member.updateOne(
+    {
+        name:"rohit"
+    },
+    {
+   age:21
+    }
+);
+await family_member.deleteMany({name:"Vaibhav"});
+
+
 
 
 
