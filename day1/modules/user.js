@@ -30,7 +30,12 @@ const user_schema = new mongoose.Schema(
             type:Number,
             min:1000,
             max:100000
+        },
+        password:
+        {
+            type:String
         }
+
     }
 );
 const user = mongoose.model("user_details",user_schema);
