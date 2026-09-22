@@ -3,14 +3,21 @@ const app = express();
 const main  = require("./db_connection")
 const student = require("./modules/student");
 const bcrypt =require("bcrypt");
+const  jwt = require('jsonwebtoken');
+const cookieParser = require("cookie-parser");
+const user_auth = require("./middleware/user_auth");
+app.use(cookieParser());
 
 
 app.use(express.json());
 app.get("/student",async(req,res)=>
 {
     try{
-    const result = await student.find();
-    res.send(result);
+
+
+        await user_auth(req,res);
+        const result = req.result;
+        res.send(result);
     }
     catch(err)
     {
@@ -21,13 +28,11 @@ app.get("/student",async(req,res)=>
 app.get("/student/:name",async(req,res)=>
 {
     try{
-    const name = req.params.name;
-    const result = await student.find(
-        {
-            name:name
-        }
-    );
-    res.send(result);
+   await  user_auth(req);
+   res.send(req.result);
+
+
+
 }
 catch(err)
 {
@@ -66,8 +71,10 @@ app.patch("/student/:name",async(req,res)=>
 catch(err)
 {
     res.send(err.message);
-}
-})
+
+}}
+)
+
 app.post("/student/login",async(req,res)=>
 {
     try{
@@ -78,11 +85,21 @@ app.post("/student/login",async(req,res)=>
             name:name
         }
     );
+    if(!data)
+    {
+      return   res.send("error");
+    }
     const hashpass =data.password;
     const valid = await bcrypt.compare(pass,hashpass);
+
     if(!valid)
-        res.send("error wrong pass or name");
-    else
+      return   res.send("error wrong pass or name");
+
+    const token = jwt.sign({"name":name},"pass@123");
+
+
+    
+    res.cookie("token",token);
         res.send("login sucessfully");
 } 
 catch(err)
