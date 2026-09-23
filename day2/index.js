@@ -10,12 +10,12 @@ app.use(cookieParser());
 
 
 app.use(express.json());
-app.get("/student",async(req,res)=>
+app.get("/student",user_auth, async(req,res)=>
 {
     try{
 
 
-        await user_auth(req,res);
+        
         const result = req.result;
         res.send(result);
     }
@@ -25,20 +25,8 @@ app.get("/student",async(req,res)=>
     }
 })
 
-app.get("/student/:name",async(req,res)=>
-{
-    try{
-   await  user_auth(req);
-   res.send(req.result);
 
 
-
-}
-catch(err)
-{
-    res.send(err.message);
-}
-})
 app.post("/student",async(req,res)=>
 {
     try{
@@ -55,7 +43,7 @@ app.post("/student",async(req,res)=>
         res.send("error"+ err.message);
     }
 })
-app.patch("/student/:name",async(req,res)=>
+app.patch("/student",user_auth,async(req,res)=>
 {
     try{
     const name = req.params.name ;
