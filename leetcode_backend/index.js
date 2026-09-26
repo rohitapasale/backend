@@ -9,7 +9,9 @@ const jwt = require("jsonwebtoken");
 const validate_user = require("./middleware/validate_user");
 
 
+
 const cookieParser = require("cookie-parser");
+const redisClient = require("../config/redis");
 app.use(cookieParser());
 
 app.post("/auth/signup",  db_auth,async (req,res)=>
@@ -48,9 +50,9 @@ app.post("/auth/login",async (req,res)=>
         );
         if(!exist)
         {
-            throw new Error("err:",err.message);
+            throw new Error("error not match ");
         }
-        const validate = bcrypt.compare(user1.password,exist.password);
+        const validate = await bcrypt.compare(user1.password,exist.password);
         if(!validate)
         {
             throw new Error("password or username not match");
@@ -59,7 +61,10 @@ app.post("/auth/login",async (req,res)=>
 
         const token = jwt.sign({
             username:exist.username
-        },"pass@123");
+        },"pass@123",
+    {
+        expiresIn:1800
+    });
         res.cookie("token",token);
         res.send("login sucessfully");
 
@@ -74,9 +79,19 @@ app.post("/auth/login",async (req,res)=>
     }
     
 })
-app.post("/auth/logout",(req,res)=>
+app.post("/auth/logout",validate_user,async (req,res)=>
 {
-    res.send("log out suceesfully");
+    const {token} = req.cookies ;
+    const payload = jwt.decode(token);
+    await redisClient.set(`token:${token}`,"blocked");
+    await redisClient.expireAt(`token:${token}`,payload.exp);
+    res.cookie("token",null,{expires:new Date(Date.now())});
+    res.send("log out sucessufully");
+
+
+    
+
+
 })
 
 
@@ -122,10 +137,15 @@ app.delete("/user",validate_user,async(req,res)=>
 })
 
 
-main().then(()=>
+const initilize = async function ()
 {
+    await Promise.all([main(),redisClient.connect()]);
+
+    console.log("db connected");
     app.listen(3000,()=>
     {
-        console.log("listening at 3000");
+        console.log("listning at 3000");
     })
-})
+
+}
+initilize();

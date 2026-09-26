@@ -1,6 +1,7 @@
 
 const jwt = require("jsonwebtoken");
 const user = require("../modules/user");
+const redisClient = require("../../config/redis");
 async function validate_user(req,res,next)
 {
 try{
@@ -12,6 +13,11 @@ try{
     }
     const payload = jwt.verify(token,"pass@123");
     //req.username = payload.username;
+    const exist =  await redisClient.exists(`token:${token}`);
+    if(exist)
+    {
+        throw new Error("device log out ");
+    }
     const result = await user.findOne(
         {
             username:payload.username

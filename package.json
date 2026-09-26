@@ -4,9 +4,8 @@
   "description": "backend nodes and codes",
   "main": "index.js",
   "scripts": {
-   "dev":"nodemon index.js",
-   "start":"node index.js"
-    
+    "dev": "nodemon index.js",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -28,7 +27,8 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongodb": "^7.5.0",
-    "mongoose": "^9.9.3"
+    "mongoose": "^9.9.3",
+    "redis": "^6.2.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.14",

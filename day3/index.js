@@ -11,6 +11,7 @@ app.use(cookieParser());
 app.use(express.json());
 const authrouter = require("./routes/auth");
 const user_route = require("./routes/user");
+const connect_redis = require("../config/redis");
 
 
 
