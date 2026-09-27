@@ -8,11 +8,11 @@ const db_auth = require("./utillis/db_auth");
 const user_auth = require("./middleware/user_auth");
 const cookieParser = require("cookie-parser");
 const redisClient = require("../config/redis")
-const ratelimiter = require("./middleware/ratelimiter")
+const ratelimiter2 = require("./middleware/ratelimiter2")
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(ratelimiter);
+app.use(ratelimiter2);
 
 app.post("/auth/signup",db_auth,async (req,res)=>
 {
