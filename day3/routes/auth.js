@@ -5,7 +5,8 @@ const bcrypt = require("bcrypt");
 const user = require("../modules/user");
 const jwt = require("jsonwebtoken");
 const db_auth = require("../utilis/db_auth")
-
+const user_auth = require("../middleware/user_auth");
+const redisClient = require("../../config/redis")
 authrouter.post("/signup",db_auth,async (req,res)=>
 {
     try{
@@ -58,10 +59,19 @@ authrouter.post("/login",async(req,res)=>
     }
 
 })
-authrouter.post("/logout", (req,res)=>
+authrouter.post("/logout",  user_auth,async (req,res)=>
 {
     try{
-    res.send("logout sucessfully");
+        const {token} = req.cookies;
+        const payload = jwt.decode(token);
+        await redisClient.set(`token:${token}`,"blocked");
+        await redisClient.expireAt(`token:${token}`,payload.exp);
+        res.cookies("token",null,{expires:new Date(Date.now())});
+        res.send("done sucessfully logout")
+
+
+
+    
     }
     catch(err)
     {

@@ -12,6 +12,7 @@ app.use(express.json());
 const authrouter = require("./routes/auth");
 const user_route = require("./routes/user");
 const connect_redis = require("../config/redis");
+const redisClient = require("../config/redis");
 
 
 
@@ -20,11 +21,13 @@ app.use("/auth",authrouter);
 app.use("/user",user_route);
 
 
-main().then(()=>
+main().then ( async ()=>
 {
+    await redisClient.connect();
+    console.log("redis connected");
     app.listen(3000,()=>
     {
-        console.log("listening at 3000 new ");
+        console.log("listening at 3000  ");
     })
 })
 
