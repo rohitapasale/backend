@@ -1,0 +1,36 @@
+function db_auth(req,res,next)
+{
+    try{
+const mendatory = ["name","password"];
+const obj = req.body ;
+const valid = mendatory.every((key)=>Object.keys(obj).includes(key));
+if(!valid)
+    throw new Error("not valid put all fields");
+
+for(const key in obj)
+{
+    if(key=="name")
+    {
+        if(obj[key].lenght<2||obj[key].lenght>=20)
+            throw new Error("name should 2-15 characters");
+
+    }
+    if(key=="duration")
+    {
+        if(obj[key]>=6||obj[key]<1)
+            throw new Error("check duration");
+    }
+    if(key=="course")
+    {
+        if(obj[key].lenght>=10)
+            throw new Error("choose correct course");
+    }
+}
+next();
+    }
+    catch(err)
+    {
+        res.send("error:"+err.message);
+    }
+}
+module.exports = db_auth;
