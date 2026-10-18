@@ -4,12 +4,18 @@ dns.setServers(['8.8.8.8','1.1.1.1']);
 require("dotenv").config();
 const url = process.env.url;
 async function main() {
+    try{
     if (!url) {
         throw new Error("MongoDB URL is missing in .env file");
     }
 
     await mongoose.connect(url);
-    console.log("DB connected successfully");
+
+    console.log("DB connected successfully");}
+    catch(err)
+    {
+        console.log("error:"+err);
+    }
 }
 
 module.exports = main;
